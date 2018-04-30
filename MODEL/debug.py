@@ -1,3 +1,2 @@
-a = [0] * 5
-a[3] = 1
-print(a)
+for k in range(5):
+    print(k)

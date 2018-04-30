@@ -38,7 +38,7 @@ class DATA():
         return X, Y
 
     
-    def get_train_data(self, size=20000):
+    def get_train_data(self, size=5000):
 
         BRANCH_NUM = int(size/(cf.BRANCH_SIZE * 5))
 
@@ -53,18 +53,21 @@ class DATA():
         return X, Y
 
 
-    def get_test_data(self,size=450):
+    def get_test_data(self):
         LEN = 0
-        X = [None] * size
-        Y = [None] * size
+        X = [None] * 500
+        Y = [None] * 500
 
-        for i in range(int(size / 5)):
+        for k in range(5):
+            FILE_DIR = cf.DATA_PATH + '验证集/' + chr(ord('A') + k) + '/'
+            FILE_LIS = os.listdir(FILE_DIR)
 
-            for k in range(5):
-                FILE_DIR = cf.DATA_PATH + '验证集/' + chr(ord('A') + k) + '/'
-                FILE_PATH = FILE_DIR + str(i) + '.jpg'
+            for FILE_PATH_1 in FILE_LIS:
+
+                FILE_PATH = FILE_DIR + FILE_PATH_1
 
                 img = Image.open(FILE_PATH)
+
                 img_arr = np.array(img)
 
                 if (img_arr.shape == (32, 32)):
@@ -177,7 +180,7 @@ class MODEL():
         
         return 0
     
-    def train(self, size = 20000, w_alpha = 0.01, b_alpha=0.01):
+    def train(self, size = 5000, w_alpha = 0.01, b_alpha=0.01):
         #读入数据
         X, Y = self.data.get_train_data(size)
         x_test, y_test = self.data.get_test_data()
@@ -196,38 +199,40 @@ class MODEL():
         loss = tf.reduce_mean(loss)
 
         #设置op
-        op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(loss)
+        op = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
 
 
         saver = tf.train.Saver()
 
         with tf.Session() as sess:
             #sess.run(tf.global_variables_initializer())
-            saver.restore(sess, cf.MODEL_PATH + 'CNN.model-98')
+            saver.restore(sess, cf.MODEL_PATH + 'CNN.model-2000')
 
             step = 0
             print('begin')
             
             while True: 
-                
+                '''
                 _, L = sess.run([op,loss], feed_dict={self.X:X[step % BRANCH_NUM], self.Y:Y[step % BRANCH_NUM]})
                 
                 if step % 20 == 0:
                     print(str(step) + '  ' + str(L))
-                      
+                '''     
                 
                 if step % 100 == 0:
                     y_p = sess.run([Y_p], feed_dict={self.X:x_test})
                     acc = self.get_acc(y_p, y_test)
                     print(str(step) + ' ' + str(acc))
                 
-                
-                if step % 500 == 0:
+                '''
+                if step % 1000 == 0:
                     saver.save(sess, cf.MODEL_PATH + 'CNN.model', global_step=step)
-                
+                '''
                 step = step + 1
+                return
         
 
 
 model = MODEL()
 model.train()
+

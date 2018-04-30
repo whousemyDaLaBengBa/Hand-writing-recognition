@@ -5,9 +5,9 @@ import os
 
 
 def trans_train_data():
-    for k in range(41, 46):
+    for k in range(5):
         print(k)
-        DIR_PATH = cf.DATA_PATH + 'train/' + str(k) + '/'
+        DIR_PATH = cf.DATA_PATH  + chr(k + ord('A')) + '/'
         FILE_LIS = os.listdir(DIR_PATH)
 
         LEN = 0
@@ -16,7 +16,7 @@ def trans_train_data():
             FILE_PATH = DIR_PATH + PATH
             img = Image.open(FILE_PATH)
 
-            if (np.array(img).shape == (128, 128, 3)):
+            if (np.array(img).shape == (90, 90, 3)):
                 img = img.resize((32, 32), Image.ANTIALIAS)
 
                 r, g, b = img.split()
@@ -27,7 +27,7 @@ def trans_train_data():
 
                 img = Image.fromarray(img_arr).convert('L')
 
-                IMG_SAVE_PATH = cf.SAVE_PATH + chr(ord('A') + k - 41) + '/' + str(LEN) + '.jpg'
+                IMG_SAVE_PATH = cf.SAVE_PATH + chr(k + ord('A')) + '/' + str(LEN) + '.jpg'
 
                 img.save(IMG_SAVE_PATH)
 
@@ -35,7 +35,7 @@ def trans_train_data():
 
 
 
-
+'''
 def trans_valid_data():
     for k in range(41, 46):
         print(k)
@@ -64,7 +64,7 @@ def trans_valid_data():
                 img.save(IMG_SAVE_PATH)
 
                 LEN = LEN + 1
+'''
 
-
-#trans_train_data()
-trans_valid_data()
+trans_train_data()
+#trans_valid_data()
