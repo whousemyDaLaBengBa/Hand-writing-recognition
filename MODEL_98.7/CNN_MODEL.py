@@ -112,7 +112,7 @@ class MODEL():
         w_c1 = tf.Variable(w_alpha*tf.random_normal([5, 5, 1, 16]), dtype=tf.float32)
         b_c1 = tf.Variable(b_alpha*tf.random_normal([16]), dtype=tf.float32)
 
-        conv1 = tf.nn.tanh(tf.nn.bias_add(tf.nn.conv2d(self.X, w_c1, strides=[1, 1, 1, 1], padding='SAME'), b_c1))
+        conv1 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(self.X, w_c1, strides=[1, 1, 1, 1], padding='SAME'), b_c1))
         conv1 = tf.nn.max_pool(conv1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
         #shape为(size, 16, 16, 16)
 
@@ -123,7 +123,7 @@ class MODEL():
         w_c2 = tf.Variable(w_alpha*tf.random_normal([5, 5, 16, 32]), dtype=tf.float32)
         b_c2 = tf.Variable(b_alpha*tf.random_normal([32]), dtype=tf.float32)
 
-        conv2 = tf.nn.tanh(tf.nn.bias_add(tf.nn.conv2d(conv1, w_c2, strides=[1, 1, 1, 1], padding='SAME'), b_c2))
+        conv2 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv1, w_c2, strides=[1, 1, 1, 1], padding='SAME'), b_c2))
         conv2 = tf.nn.max_pool(conv2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
         #shape为(size, 8, 8, 32)
         
@@ -214,14 +214,14 @@ class MODEL():
         loss = tf.reduce_mean(loss)
 
         #设置op
-        op = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
+        op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(loss)
 
 
         saver = tf.train.Saver()
 
         with tf.Session() as sess:
             #sess.run(tf.global_variables_initializer())
-            saver.restore(sess, cf.MODEL_PATH + 'CNN.model-3000')
+            saver.restore(sess, cf.MODEL_PATH + 'CNN.model-100')
 
             step = 0
             print('begin')
@@ -232,20 +232,20 @@ class MODEL():
                 
                 if step % 20 == 0:
                     print(str(step) + '  ' + str(L))
-                '''
                 
+                '''
                 if step % 100 == 0:
                     y_p = sess.run([Y_p], feed_dict={self.X:x_test})
-                    ypp = sess.run([Y_p], feed_dict={self.X:X[0]})
+                    #ypp = sess.run([Y_p], feed_dict={self.X:X[0]})
 
-                    acc_t = self.get_acc(ypp, Y[0])
+                    #acc_t = self.get_acc(ypp, Y[0])
 
                     acc = self.get_acc(y_p, y_test)
                     print(str(step) + ' ' + str(acc))
-                    print(acc_t)
+                    #print(acc_t)
                 
                 '''
-                if step % 1000 == 0:
+                if step % 100 == 0:
                     saver.save(sess, cf.MODEL_PATH + 'CNN.model', global_step=step)
                 '''
                 step = step + 1
