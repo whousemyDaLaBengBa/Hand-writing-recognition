@@ -103,11 +103,13 @@ class MODEL():
         self.Y = tf.placeholder(dtype=tf.float32, shape=[None, 5])
         self.data = DATA()
 
+        self.x_test = None
+
 
     def assemble_graph(self, w_alpha = 0.01, b_alpha=0.01):
         #第一层
         #10个3*3*3的卷积核
-        w_c1 = tf.Variable(w_alpha*tf.random_normal([2, 2, 1, 16]), dtype=tf.float32)
+        w_c1 = tf.Variable(w_alpha*tf.random_normal([5, 5, 1, 16]), dtype=tf.float32)
         b_c1 = tf.Variable(b_alpha*tf.random_normal([16]), dtype=tf.float32)
 
         conv1 = tf.nn.tanh(tf.nn.bias_add(tf.nn.conv2d(self.X, w_c1, strides=[1, 1, 1, 1], padding='SAME'), b_c1))
@@ -118,7 +120,7 @@ class MODEL():
 
         
         #第二层
-        w_c2 = tf.Variable(w_alpha*tf.random_normal([2, 2, 16, 32]), dtype=tf.float32)
+        w_c2 = tf.Variable(w_alpha*tf.random_normal([5, 5, 16, 32]), dtype=tf.float32)
         b_c2 = tf.Variable(b_alpha*tf.random_normal([32]), dtype=tf.float32)
 
         conv2 = tf.nn.tanh(tf.nn.bias_add(tf.nn.conv2d(conv1, w_c2, strides=[1, 1, 1, 1], padding='SAME'), b_c2))
@@ -143,13 +145,13 @@ class MODEL():
 
         Y_p =  tf.add(tf.matmul(cnn_out, w_out), b_out)
         #shape为(size, 5)
-        
         '''
+        
         #测试用代码
         x,y = self.data.get_train_data()
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
-            out = sess.run([Y_p], feed_dict={self.X:x[0]})
+            out = sess.run([conv2], feed_dict={self.X:x[0]})
             print(np.array(out).shape)
         '''
         return Y_p
@@ -175,6 +177,16 @@ class MODEL():
                 
             if (Y[k][poi] == 1):
                 ACC = ACC + 1
+            else:
+                '''
+                img_arr = self.x_test[k]
+
+                img_arr = img_arr.reshape(32, 32)
+                img = Image.fromarray(img_arr).convert('L')
+                img.show()
+                print(img_arr.shape)
+                '''
+                pass
 
         return ACC/SUM 
         
@@ -185,7 +197,7 @@ class MODEL():
         X, Y = self.data.get_train_data(size)
         x_test, y_test = self.data.get_test_data()
 
-        
+        self.x_test = x_test
         
         #获取神经网络输出与预测值
         BRANCH_NUM = len(X)
@@ -206,7 +218,7 @@ class MODEL():
 
         with tf.Session() as sess:
             #sess.run(tf.global_variables_initializer())
-            saver.restore(sess, cf.MODEL_PATH + 'CNN.model-2000')
+            saver.restore(sess, cf.MODEL_PATH + 'CNN.model-3000')
 
             step = 0
             print('begin')
@@ -217,12 +229,17 @@ class MODEL():
                 
                 if step % 20 == 0:
                     print(str(step) + '  ' + str(L))
-                '''     
+                '''
                 
                 if step % 100 == 0:
                     y_p = sess.run([Y_p], feed_dict={self.X:x_test})
+                    ypp = sess.run([Y_p], feed_dict={self.X:X[0]})
+
+                    acc_t = self.get_acc(ypp, Y[0])
+
                     acc = self.get_acc(y_p, y_test)
                     print(str(step) + ' ' + str(acc))
+                    print(acc_t)
                 
                 '''
                 if step % 1000 == 0:
@@ -230,7 +247,6 @@ class MODEL():
                 '''
                 step = step + 1
                 return
-        
 
 
 model = MODEL()

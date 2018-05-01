@@ -1,4 +1,5 @@
-model_checkpoint_path: "/home/ffb/Workspace/Python-srf/\346\211\213\345\206\231\345\255\227\350\257\206\345\210\253/Hand-writing-recognition/MODEL/MODEL/CNN.model-2000"
+model_checkpoint_path: "/home/ffb/Workspace/Python-srf/\346\211\213\345\206\231\345\255\227\350\257\206\345\210\253/Hand-writing-recognition/MODEL/MODEL/CNN.model-3000"
 all_model_checkpoint_paths: "/home/ffb/Workspace/Python-srf/\346\211\213\345\206\231\345\255\227\350\257\206\345\210\253/Hand-writing-recognition/MODEL/MODEL/CNN.model-0"
 all_model_checkpoint_paths: "/home/ffb/Workspace/Python-srf/\346\211\213\345\206\231\345\255\227\350\257\206\345\210\253/Hand-writing-recognition/MODEL/MODEL/CNN.model-1000"
 all_model_checkpoint_paths: "/home/ffb/Workspace/Python-srf/\346\211\213\345\206\231\345\255\227\350\257\206\345\210\253/Hand-writing-recognition/MODEL/MODEL/CNN.model-2000"
+all_model_checkpoint_paths: "/home/ffb/Workspace/Python-srf/\346\211\213\345\206\231\345\255\227\350\257\206\345\210\253/Hand-writing-recognition/MODEL/MODEL/CNN.model-3000"
