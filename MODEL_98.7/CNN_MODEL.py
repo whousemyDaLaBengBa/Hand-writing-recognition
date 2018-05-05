@@ -178,7 +178,7 @@ class MODEL():
             if (Y[k][poi] == 1):
                 ACC = ACC + 1
             else:
-                
+                '''
                 img_arr = self.x_test[k]
 
                 img_arr = img_arr.reshape(32, 32)
@@ -188,7 +188,7 @@ class MODEL():
                 print(Y_p[k])
                 print(Y[k])
                 #print(img_arr.shape)
-                
+                '''
                 pass
 
         return ACC/SUM 
