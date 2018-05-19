@@ -151,7 +151,7 @@ class MODEL():
         w_out = tf.Variable(w_alpha*tf.random_normal([4 * 4 * 80, 4]), dtype=tf.float32)
         b_out = tf.Variable(w_alpha*tf.random_normal([4]), dtype=tf.float32)
 
-        Y_p =  tf.add(tf.matmul(cnn_out, w_out), b_out)
+        Y_p =  tf.add(tf.matmul(cnn_out, w_out), b_out, name='before_softmax')
         #shape为(size, 4)
 
 
@@ -202,7 +202,7 @@ class MODEL():
             if (Y[k][poi] == 1):
                 ACC = ACC + 1
             else:
-                
+                '''
                 img_arr = self.x_test[k]
                 
                 img_arr = img_arr.reshape(32, 32)
@@ -212,7 +212,7 @@ class MODEL():
                 print(Y_p[k])
                 print(Y[k])
                 #print(img_arr.shape)
-                
+                '''
                 pass
 
         return ACC/SUM 
@@ -237,7 +237,7 @@ class MODEL():
         #计算loss
         loss = tf.nn.softmax_cross_entropy_with_logits(logits=network_output, labels=self.Y)
         loss = tf.reduce_mean(loss)
-        loss = loss + (self.L2 * 100.0) #2.0为正则化项
+        #loss = loss + (self.L2 * 100.0) #2.0为正则化项
 
         #设置op
         op = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
@@ -247,36 +247,39 @@ class MODEL():
 
         with tf.Session() as sess:
             #sess.run(tf.global_variables_initializer())
-            saver.restore(sess, cf.MODEL_PATH + 'CNN.model-2000')
+            saver.restore(sess, cf.MODEL_PATH + 'CNN.model-400')
 
             step = 0
             print('begin')
             
             while True: 
-                '''
+                
                 _, L = sess.run([op,loss], feed_dict={self.X:X[step % BRANCH_NUM], self.Y:Y[step % BRANCH_NUM]})
                 
                 if step % 20 == 0:
                     print(str(step) + '  ' + str(L))
-                '''
+                
                 
                 if step % 100 == 0:
                     y_p = sess.run([Y_p], feed_dict={self.X:x_test})
-                    #ypp = sess.run([Y_p], feed_dict={self.X:X[0]})
+                    ypp = sess.run([Y_p], feed_dict={self.X:X[0]})
 
-                    #acc_t = self.get_acc(ypp, Y[0])
+                    acc_t = self.get_acc(ypp, Y[0])
 
                     acc = self.get_acc(y_p, y_test)
                     print(str(acc))
-                    #print(acc_t)
+                    print(acc_t)
+                    if acc > 0.992:
+                        saver.save(sess, cf.MODEL_PATH + 'CNN.model', global_step=step)
+                        return
                 
-                '''
-                if step % 500 == 0:
+                
+                if step % 1000 == 0:
                     saver.save(sess, cf.MODEL_PATH + 'CNN.model', global_step=step)
-                '''
-                step = step + 1
-                return
                 
+                step = step + 1
+                
+                #return
 
 
 model = MODEL()

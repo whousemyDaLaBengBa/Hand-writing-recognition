@@ -143,7 +143,8 @@ class MODEL():
         w_out = tf.Variable(w_alpha*tf.random_normal([4 * 4 * 64, 5]), dtype=tf.float32)
         b_out = tf.Variable(w_alpha*tf.random_normal([5]), dtype=tf.float32)
 
-        Y_p =  tf.add(tf.matmul(cnn_out, w_out), b_out)
+        Y_p =  tf.add(tf.matmul(cnn_out, w_out), b_out, name='before_softmax')
+        print(Y_p)
         #shape为(size, 5)
         '''
         
@@ -214,14 +215,14 @@ class MODEL():
         loss = tf.reduce_mean(loss)
 
         #设置op
-        op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(loss)
+        op = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
 
 
         saver = tf.train.Saver()
 
         with tf.Session() as sess:
             #sess.run(tf.global_variables_initializer())
-            saver.restore(sess, cf.MODEL_PATH + 'CNN.model-100')
+            saver.restore(sess, cf.MODEL_PATH + 'CNN.model-2000')
 
             step = 0
             print('begin')
@@ -236,16 +237,16 @@ class MODEL():
                 '''
                 if step % 100 == 0:
                     y_p = sess.run([Y_p], feed_dict={self.X:x_test})
-                    #ypp = sess.run([Y_p], feed_dict={self.X:X[0]})
+                    ypp = sess.run([Y_p], feed_dict={self.X:X[0]})
 
-                    #acc_t = self.get_acc(ypp, Y[0])
+                    acc_t = self.get_acc(ypp, Y[0])
 
                     acc = self.get_acc(y_p, y_test)
                     print(str(step) + ' ' + str(acc))
-                    #print(acc_t)
+                    print(acc_t)
                 
                 '''
-                if step % 100 == 0:
+                if step % 1000 == 0:
                     saver.save(sess, cf.MODEL_PATH + 'CNN.model', global_step=step)
                 '''
                 step = step + 1
